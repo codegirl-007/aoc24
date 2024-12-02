@@ -1,7 +1,6 @@
 -module(day1).
--export([read_file_to_two_lists/1, day1/0]).
+-export([read_file_to_two_lists/1, part1/0, part2/0]).
 
-% Reads a file and converts each line to a string in a list
 read_file_to_two_lists(FileName) ->
     case file:open(FileName, [read]) of
         {ok, File} ->
@@ -13,14 +12,12 @@ read_file_to_two_lists(FileName) ->
             {error, Reason}
     end.
 
-% Helper function to read lines recursively
 read_lines_to_two_lists(File, List1Acc, List2Acc) ->
     case file:read_line(File) of
         {ok, Line} ->
             LineString = lists:flatten(Line),
             case string:split(LineString, "   ", all) of
                 [First, Second] ->
-                    % Convert strings to integers and append to respective lists
                     {FirstNum, _} = string:to_integer(First),
                     {SecondNum, _} = string:to_integer(Second),
                     read_lines_to_two_lists(File, [FirstNum | List1Acc], [SecondNum | List2Acc]);
@@ -35,28 +32,53 @@ read_lines_to_two_lists(File, List1Acc, List2Acc) ->
             {error, Reason}
     end.
 
-% Function to calculate differences between corresponding elements of two lists
 differences(List1, List2) ->
     calculate_differences(List1, List2, []).
 
-% Helper function to iterate through both lists and calculate differences
 calculate_differences([H1 | T1], [H2 | T2], Acc) ->
-    calculate_differences(T1, T2, [H1 - H2 | Acc]);
+    calculate_differences(T1, T2, [abs(H1 - H2) | Acc]);
 calculate_differences([], [], Acc) ->
     lists:reverse(Acc).
 
 sum(List) ->
     lists:foldl(fun(X, Acc) -> X + Acc end, 0, List).
 
-day1() -> 
+process(List1, List2) ->
+    lists:map(fun(Item) ->
+        Occurrences = count_in_list(Item, List2),
+        Item * Occurrences
+    end, List1).
+
+count_in_list(Item, List) ->
+    length(lists:filter(fun(X) -> X =:= Item end, List)).
+
+part1() -> 
   FileName = "input.txt",
     case read_file_to_two_lists(FileName) of
         {error, _} -> 
             io:format("Failed to read file: ~p~n", [FileName]);
         {List1, List2} -> 
+            io:format("List 1: ~p~n", [List1]),
+            io:format("List 2: ~p~n", [List2]),
             SortedList1 = lists:sort(List1),
             SortedList2 = lists:sort(List2),
+            io:format("Sorted List 1: ~p~n", [SortedList1]),
+            io:format("Sorted List 2: ~p~n", [SortedList2]),
             DiffList = differences(SortedList1, SortedList2),
+            io:format("Sum: ~p~n", [DiffList]),
             Total = sum(DiffList),
             io:format("Sum: ~p~n", [Total])
+    end.
+
+part2() ->
+  FileName = "input.txt",
+    case read_file_to_two_lists(FileName) of
+        {error, _} -> 
+            io:format("Failed to read file: ~p~n", [FileName]);
+        {List1, List2} -> 
+            io:format("List 1: ~p~n", [List1]),
+            io:format("List 2: ~p~n", [List2]),
+            FinalNums = process(List1, List2),
+            Sum = sum(FinalNums),
+            io:format("Sum: ~p~n", [Sum])
     end.
