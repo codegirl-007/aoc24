@@ -58,14 +58,9 @@ part1() ->
         {error, _} -> 
             io:format("Failed to read file: ~p~n", [FileName]);
         {List1, List2} -> 
-            io:format("List 1: ~p~n", [List1]),
-            io:format("List 2: ~p~n", [List2]),
             SortedList1 = lists:sort(List1),
             SortedList2 = lists:sort(List2),
-            io:format("Sorted List 1: ~p~n", [SortedList1]),
-            io:format("Sorted List 2: ~p~n", [SortedList2]),
             DiffList = differences(SortedList1, SortedList2),
-            io:format("Sum: ~p~n", [DiffList]),
             Total = sum(DiffList),
             io:format("Sum: ~p~n", [Total])
     end.
@@ -76,8 +71,6 @@ part2() ->
         {error, _} -> 
             io:format("Failed to read file: ~p~n", [FileName]);
         {List1, List2} -> 
-            io:format("List 1: ~p~n", [List1]),
-            io:format("List 2: ~p~n", [List2]),
             FinalNums = process(List1, List2),
             Sum = sum(FinalNums),
             io:format("Sum: ~p~n", [Sum])
